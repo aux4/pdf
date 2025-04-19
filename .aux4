@@ -1,0 +1,70 @@
+{
+  "scope": "aux4",
+  "name": "pdf",
+  "version": "0.0.1",
+  "description": "PDF toolkit",
+  "tags": [
+    "pdf"
+  ],
+  "system": [
+    [ "test:node --version", "brew:node" ]
+  ],
+  "profiles": [
+    {
+      "name": "main",
+      "commands": [
+        {
+          "name": "pdf",
+          "execute": [
+            "profile:pdf"
+          ],
+          "help": {
+            "text": "Manipulate the PDF file"
+          }
+        }
+      ]
+    },
+    {
+      "name": "pdf",
+      "commands": [
+        {
+          "name": "parse",
+          "execute": [
+            "node ${packageDir}/index.js parse values(file)"
+          ],
+          "help": {
+            "text": "Parse the PDF file",
+            "variables": [
+              {
+                "name": "file",
+                "text": "The PDF file to parse",
+                "arg": true
+              }
+            ]
+          }
+        },
+        {
+          "name": "fill",
+          "execute": [
+            "stdin:node ${packageDir}/index.js fill values(file, out)"
+          ],
+          "help": {
+            "text": "Fill the PDF file",
+            "variables": [
+              {
+                "name": "file",
+                "text": "The PDF file to fill",
+                "arg": true
+              },
+              {
+                "name": "out",
+                "text": "The location to save the filled PDF file. If not provided, the filled PDF will be saved in the same location as the original file.",
+                "default": ""
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
