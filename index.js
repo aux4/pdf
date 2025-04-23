@@ -13,6 +13,7 @@ import {
 } from "./lib/doc.js";
 import { stdin } from "process";
 import { imagePdf } from "./lib/image.js";
+import { addForm } from "./lib/doc.js";
 
 export async function parsePdf(pdfPath) {
   const pdf = await loadPdfFromFile(pdfPath);
@@ -38,6 +39,12 @@ export async function parsePdf(pdfPath) {
       value: item.value,
       type: item.type,
       options: item.options,
+      ref: {
+        x: item.x,
+        y: item.y,
+        width: item.width,
+        height: item.height,
+      }
     }));
 
     pages.push({ page: i, text, fields: pdfFields });
@@ -104,12 +111,27 @@ export async function fillPdf(inPdfPath, outPdfPath) {
     }
     const outputPaths = await imagePdf(pdfPath, page, outputArg);
     outputPaths.forEach((p) => console.log(p));
+  } else if (args[0] === "form" && args.length === 3) {
+    const inPdfPath = args[1];
+    const outPdfPath = args[2];
+    // Read JSON array from stdin
+    const inputJson = await new Promise((resolve, reject) => {
+      let data = "";
+      stdin.setEncoding("utf-8");
+      stdin.on("data", (chunk) => (data += chunk));
+      stdin.on("end", () => resolve(data));
+      stdin.on("error", (err) => reject(err));
+    });
+    const elements = JSON.parse(inputJson);
+    await addForm(inPdfPath, outPdfPath, elements);
+    console.log(`Form fields added and saved to ${outPdfPath}`);
   } else {
     console.error("Invalid arguments. Usage:");
     console.error("  node index.js parse '<PDF PATH>'");
     console.error("  node index.js fill '<IN PDF PATH>' '<OUT PDF PATH>'");
     console.error("  node index.js count '<PDF PATH>'");
     console.error("  node index.js image '<PDF PATH>' [<PAGE NUMBER>] [<OUTPUT PATH>]");
+    console.error("  node index.js form '<IN PDF PATH>' '<OUT PDF PATH>' <form definitions JSON via stdin>");
     process.exit(1);
   }
 })();

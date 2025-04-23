@@ -1,7 +1,7 @@
 {
   "scope": "aux4",
   "name": "pdf",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "PDF toolkit",
   "tags": [
     "pdf"
@@ -89,6 +89,26 @@
                 "name": "out",
                 "text": "The location to save the filled PDF file. If not provided, the filled PDF will be saved in the same location as the original file.",
                 "default": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "form",
+          "execute": [
+            "stdin:node ${packageDir}/index.js form values(file, out)"
+          ],
+          "help": {
+            "text": "Add form fields to the PDF file",
+            "variables": [
+              {
+                "name": "file",
+                "text": "The PDF file to add form fields to",
+                "arg": true
+              },
+              {
+                "name": "out",
+                "text": "The location to save the updated PDF file"
               }
             ]
           }
