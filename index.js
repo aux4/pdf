@@ -11,8 +11,8 @@ import {
   setFieldValue,
   savePdfToFile
 } from "./lib/doc.js";
-import { readFileSync } from "fs";
 import { stdin } from "process";
+import { imagePdf } from "./lib/image.js";
 
 export async function parsePdf(pdfPath) {
   const pdf = await loadPdfFromFile(pdfPath);
@@ -82,10 +82,34 @@ export async function fillPdf(inPdfPath, outPdfPath) {
     const outPdfPath = args[2] || inPdfPath;
     await fillPdf(inPdfPath, outPdfPath);
     console.log(`PDF filled and saved to ${outPdfPath}`);
+  } else if (args[0] === "count" && args.length === 2) {
+    const pdfPath = args[1];
+    const pdf = await loadPdfFromFile(pdfPath);
+    const pageCount = await getPdfPageCount(pdf);
+    console.log(pageCount);
+  } else if (args[0] === "image" && args.length >= 2 && args.length <= 4) {
+    const pdfPath = args[1];
+    let page = null;
+    let outputArg = null;
+    if (args.length >= 3) {
+      const maybe = parseInt(args[2], 10);
+      if (!isNaN(maybe)) {
+        page = maybe;
+      } else {
+        outputArg = args[2];
+      }
+    }
+    if (args.length === 4) {
+      outputArg = args[3];
+    }
+    const outputPaths = await imagePdf(pdfPath, page, outputArg);
+    outputPaths.forEach((p) => console.log(p));
   } else {
     console.error("Invalid arguments. Usage:");
     console.error("  node index.js parse '<PDF PATH>'");
     console.error("  node index.js fill '<IN PDF PATH>' '<OUT PDF PATH>'");
+    console.error("  node index.js count '<PDF PATH>'");
+    console.error("  node index.js image '<PDF PATH>' [<PAGE NUMBER>] [<OUTPUT PATH>]");
     process.exit(1);
   }
 })();

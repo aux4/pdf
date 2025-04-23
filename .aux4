@@ -7,7 +7,20 @@
     "pdf"
   ],
   "system": [
-    [ "test:node --version", "brew:node" ]
+    [
+      "test:node --version",
+      "brew:node"
+    ],
+    [
+      "test:gs version",
+      "apt:ghostscript",
+      "brew:gs"
+    ],
+    [
+      "test:gm version",
+      "apt:graphicsmagick",
+      "brew:graphicsmagick"
+    ]
   ],
   "profiles": [
     {
@@ -27,6 +40,22 @@
     {
       "name": "pdf",
       "commands": [
+        {
+          "name": "count",
+          "execute": [
+            "node ${packageDir}/index.js count values(file)"
+          ],
+          "help": {
+            "text": "Count the number of pages in the PDF file",
+            "variables": [
+              {
+                "name": "file",
+                "text": "The PDF file to count",
+                "arg": true
+              }
+            ]
+          }
+        },
         {
           "name": "parse",
           "execute": [
@@ -59,6 +88,32 @@
               {
                 "name": "out",
                 "text": "The location to save the filled PDF file. If not provided, the filled PDF will be saved in the same location as the original file.",
+                "default": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "image",
+          "execute": [
+            "node ${packageDir}/index.js image values(file, page, image)"
+          ],
+          "help": {
+            "text": "Convert the page of the PDF file to an image",
+            "variables": [
+              {
+                "name": "file",
+                "text": "The PDF file to convert",
+                "arg": true
+              },
+              {
+                "name": "page",
+                "text": "The page number to convert",
+                "default": ""
+              },
+              {
+                "name": "image",
+                "text": "The location to save the image file. If not provided, the image will be saved in the same location as the original file.",
                 "default": ""
               }
             ]
