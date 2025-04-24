@@ -1,8 +1,9 @@
 {
   "scope": "aux4",
   "name": "pdf",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "PDF toolkit",
+  "license": "Apache-2.0",
   "tags": [
     "pdf"
   ],

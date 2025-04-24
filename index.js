@@ -11,7 +11,7 @@ import {
   setFieldValue,
   savePdfToFile
 } from "./lib/doc.js";
-import { stdin } from "process";
+import { stdin } from "node:process";
 import { imagePdf } from "./lib/image.js";
 import { addForm } from "./lib/doc.js";
 
