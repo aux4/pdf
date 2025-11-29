@@ -3,8 +3,12 @@
   "version": "0.0.1",
   "description": "PDF CLI tool",
   "type": "module",
-  "main": "index.js",
+  "main": "package/lib/aux4-pdf.js",
+  "exports": {
+    ".": "./package/lib/aux4-pdf.js"
+  },
   "scripts": {
+    "build": "rollup -c",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -29,5 +33,10 @@
     "pdf.js-extract": "^0.2.1",
     "pdfjs-dist": "^5.1.91",
     "pdf2pic": "^1.1.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.1",
+    "@rollup/plugin-node-resolve": "^15.3.0",
+    "rollup": "^4.27.4"
   }
 }

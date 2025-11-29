@@ -1,0 +1,150 @@
+{
+  "scope": "aux4",
+  "name": "pdf",
+  "version": "0.0.4",
+  "description": "PDF toolkit",
+  "license": "Apache-2.0",
+  "tags": [
+    "pdf"
+  ],
+  "system": [
+    [
+      "test:node --version",
+      "brew:node",
+      "apt:nodejs",
+      "linux:nodejs"
+    ],
+    [
+      "test:gs version",
+      "apt:ghostscript",
+      "linux:ghostscript",
+      "brew:gs"
+    ],
+    [
+      "test:gm version",
+      "apt:graphicsmagick",
+      "linux:graphicsmagick",
+      "brew:graphicsmagick"
+    ]
+  ],
+  "profiles": [
+    {
+      "name": "main",
+      "commands": [
+        {
+          "name": "pdf",
+          "execute": [
+            "profile:pdf"
+          ],
+          "help": {
+            "text": "Manipulate the PDF file"
+          }
+        }
+      ]
+    },
+    {
+      "name": "pdf",
+      "commands": [
+        {
+          "name": "count",
+          "execute": [
+            "node ${packageDir}/lib/aux4-pdf.js count values(file)"
+          ],
+          "help": {
+            "text": "Count the number of pages in the PDF file",
+            "variables": [
+              {
+                "name": "file",
+                "text": "The PDF file to count",
+                "arg": true
+              }
+            ]
+          }
+        },
+        {
+          "name": "parse",
+          "execute": [
+            "node ${packageDir}/lib/aux4-pdf.js parse values(file)"
+          ],
+          "help": {
+            "text": "Parse the PDF file",
+            "variables": [
+              {
+                "name": "file",
+                "text": "The PDF file to parse",
+                "arg": true
+              }
+            ]
+          }
+        },
+        {
+          "name": "fill",
+          "execute": [
+            "stdin:node ${packageDir}/lib/aux4-pdf.js fill values(file, out)"
+          ],
+          "help": {
+            "text": "Fill the PDF file",
+            "variables": [
+              {
+                "name": "file",
+                "text": "The PDF file to fill",
+                "arg": true
+              },
+              {
+                "name": "out",
+                "text": "The location to save the filled PDF file. If not provided, the filled PDF will be saved in the same location as the original file.",
+                "default": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "form",
+          "execute": [
+            "stdin:node ${packageDir}/lib/aux4-pdf.js form values(file, out)"
+          ],
+          "help": {
+            "text": "Add form fields to the PDF file",
+            "variables": [
+              {
+                "name": "file",
+                "text": "The PDF file to add form fields to",
+                "arg": true
+              },
+              {
+                "name": "out",
+                "text": "The location to save the updated PDF file"
+              }
+            ]
+          }
+        },
+        {
+          "name": "image",
+          "execute": [
+            "node ${packageDir}/lib/aux4-pdf.js image values(file, page, image)"
+          ],
+          "help": {
+            "text": "Convert the page of the PDF file to an image",
+            "variables": [
+              {
+                "name": "file",
+                "text": "The PDF file to convert",
+                "arg": true
+              },
+              {
+                "name": "page",
+                "text": "The page number to convert",
+                "default": ""
+              },
+              {
+                "name": "image",
+                "text": "The location to save the image file. If not provided, the image will be saved in the same location as the original file.",
+                "default": ""
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
