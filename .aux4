@@ -6,7 +6,8 @@
         {
           "name": "build",
           "execute": [
-            "npm run buld"
+            "npm run build",
+            "cd package/lib && npm install"
           ],
           "help": {
             "text": "Build the package"

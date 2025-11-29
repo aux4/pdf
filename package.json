@@ -31,12 +31,14 @@
     "pdf-lib": "^1.17.1",
     "pdf-parse": "^1.1.1",
     "pdf.js-extract": "^0.2.1",
-    "pdfjs-dist": "^5.1.91",
-    "pdf2pic": "^1.1.0"
+    "pdf2pic": "^1.1.0",
+    "pdfjs-dist": "^5.1.91"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^28.0.1",
+    "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.3.0",
+    "@rollup/plugin-replace": "^6.0.3",
     "rollup": "^4.27.4"
   }
 }
