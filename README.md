@@ -1,14 +1,6 @@
-# pdf
-This is a PDF utility tool.
+# aux4/pdf
 
-## Count
+PDF toolkit
 
-This tool counts the number of pages in a PDF file.
-
-## Parse
-
-It allows you to parse a PDF file, listing the content of each page and its fields.
-
-## Image
-
-It can convert a page of a PDF file to an image.
+- [aux4 hub](https://hub.aux4.io/r/public/packages/aux4/pdf)
+- [README.md](./package/README.md)
