@@ -14,6 +14,14 @@ import {
 import { stdin } from "process";
 import { imagePdf } from "./lib/image.js";
 import { addForm } from "./lib/doc.js";
+import { protectPdf, unprotectPdf, isProtected } from "./lib/protect.js";
+
+function guardProtected(pdfPath) {
+  if (isProtected(pdfPath)) {
+    console.error("The PDF file is password-protected. Use 'aux4 pdf unprotect' to remove protection first.");
+    process.exit(1);
+  }
+}
 
 export async function parsePdf(pdfPath) {
   const pdf = await loadPdfFromFile(pdfPath);
@@ -80,22 +88,38 @@ export async function fillPdf(inPdfPath, outPdfPath) {
 (async () => {
   const args = process.argv.slice(2);
 
-  if (args[0] === "parse" && args.length === 2) {
+  if (args[0] === "protect" && args.length === 4) {
+    const inPdfPath = args[1];
+    const password = args[2];
+    const outPdfPath = args[3] || inPdfPath;
+    protectPdf(inPdfPath, outPdfPath, password);
+    console.log(`PDF protected and saved to ${outPdfPath}`);
+  } else if (args[0] === "unprotect" && args.length === 4) {
+    const inPdfPath = args[1];
+    const password = args[2];
+    const outPdfPath = args[3] || inPdfPath;
+    unprotectPdf(inPdfPath, outPdfPath, password);
+    console.log(`PDF unprotected and saved to ${outPdfPath}`);
+  } else if (args[0] === "parse" && args.length === 2) {
     const pdfPath = args[1];
+    guardProtected(pdfPath);
     const result = await parsePdf(pdfPath);
     console.log(JSON.stringify(result, null, 2));
   } else if (args[0] === "fill" && args.length === 3) {
     const inPdfPath = args[1];
     const outPdfPath = args[2] || inPdfPath;
+    guardProtected(inPdfPath);
     await fillPdf(inPdfPath, outPdfPath);
     console.log(`PDF filled and saved to ${outPdfPath}`);
   } else if (args[0] === "count" && args.length === 2) {
     const pdfPath = args[1];
+    guardProtected(pdfPath);
     const pdf = await loadPdfFromFile(pdfPath);
     const pageCount = await getPdfPageCount(pdf);
     console.log(pageCount);
   } else if (args[0] === "image" && args.length >= 2 && args.length <= 4) {
     const pdfPath = args[1];
+    guardProtected(pdfPath);
     let page = null;
     let outputArg = null;
     if (args.length >= 3) {
@@ -114,6 +138,7 @@ export async function fillPdf(inPdfPath, outPdfPath) {
   } else if (args[0] === "form" && args.length === 3) {
     const inPdfPath = args[1];
     const outPdfPath = args[2];
+    guardProtected(inPdfPath);
     // Read JSON array from stdin
     const inputJson = await new Promise((resolve, reject) => {
       let data = "";
@@ -132,6 +157,8 @@ export async function fillPdf(inPdfPath, outPdfPath) {
     console.error("  node index.js count '<PDF PATH>'");
     console.error("  node index.js image '<PDF PATH>' [<PAGE NUMBER>] [<OUTPUT PATH>]");
     console.error("  node index.js form '<IN PDF PATH>' '<OUT PDF PATH>' <form definitions JSON via stdin>");
+    console.error("  node index.js protect '<IN PDF PATH>' '<OUT PDF PATH>'");
+    console.error("  node index.js unprotect '<IN PDF PATH>' '<OUT PDF PATH>'");
     process.exit(1);
   }
 })();

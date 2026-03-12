@@ -2,7 +2,7 @@
 
 PDF toolkit
 
-A small set of aux4 commands for inspecting and manipulating PDF files. This package exposes utilities to count pages, parse PDF structure, fill PDFs with data, add form fields, and render PDF pages to images.
+A small set of aux4 commands for inspecting and manipulating PDF files. This package exposes utilities to count pages, parse PDF structure, fill PDFs with data, add form fields, render PDF pages to images, and password-protect or unprotect PDFs.
 
 This package is useful for automation workflows that need quick, scriptable PDF operations (page counts, extracting structure, filling templates, adding form fields, exporting pages as images) and fits into the aux4 ecosystem as a lightweight PDF helper that can be composed with other aux4 packages and scripts.
 
@@ -148,6 +148,34 @@ This converts page 2 of brochure.pdf into page2.png.
 
 For command-specific details, see [aux4 pdf image](./commands/pdf/image).
 
+## Protect a PDF with a password
+
+Overview
+
+The protect command encrypts a PDF file with a password using 256-bit AES encryption. Provide the PDF as the positional argument and use --password to set the encryption password. Use --out to specify the output file (if omitted, the original file is overwritten).
+
+Example
+
+```bash
+aux4 pdf protect document.pdf --password secret123 --out protected.pdf
+```
+
+For command-specific details, see [aux4 pdf protect](./commands/pdf/protect).
+
+## Remove password protection from a PDF
+
+Overview
+
+The unprotect command decrypts a password-protected PDF. Provide the encrypted PDF as the positional argument and use --password with the correct password. Use --out to specify the output file (if omitted, the original file is overwritten).
+
+Example
+
+```bash
+aux4 pdf unprotect protected.pdf --password secret123 --out decrypted.pdf
+```
+
+For command-specific details, see [aux4 pdf unprotect](./commands/pdf/unprotect).
+
 ## Examples
 
 ### Fill a template with JSON data
@@ -181,6 +209,17 @@ aux4 pdf image report.pdf --page 3 --image report-page-3.png
 ```
 
 Each command writes the specified page to the given PNG file.
+
+### Protect and unprotect a PDF
+
+Encrypt a PDF with a password and then decrypt it:
+
+```bash
+aux4 pdf protect report.pdf --password mySecret --out report-protected.pdf
+aux4 pdf unprotect report-protected.pdf --password mySecret --out report-decrypted.pdf
+```
+
+Note: other commands (count, parse, fill, form, image) will show an error if the PDF is password-protected. Use `aux4 pdf unprotect` first.
 
 ## License
 

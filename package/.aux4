@@ -25,6 +25,12 @@
       "apt:graphicsmagick",
       "linux:graphicsmagick",
       "brew:graphicsmagick"
+    ],
+    [
+      "test:qpdf --version",
+      "brew:qpdf",
+      "apt:qpdf",
+      "linux:qpdf"
     ]
   ],
   "profiles": [
@@ -114,6 +120,56 @@
               {
                 "name": "out",
                 "text": "The location to save the updated PDF file"
+              }
+            ]
+          }
+        },
+        {
+          "name": "protect",
+          "execute": [
+            "node ${packageDir}/lib/aux4-pdf.js protect values(file, password, out)"
+          ],
+          "help": {
+            "text": "Password-protect a PDF file",
+            "variables": [
+              {
+                "name": "file",
+                "text": "The PDF file to protect",
+                "arg": true
+              },
+              {
+                "name": "password",
+                "text": "The password to encrypt the PDF with"
+              },
+              {
+                "name": "out",
+                "text": "The location to save the protected PDF file. If not provided, the original file will be overwritten.",
+                "default": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "unprotect",
+          "execute": [
+            "node ${packageDir}/lib/aux4-pdf.js unprotect values(file, password, out)"
+          ],
+          "help": {
+            "text": "Remove password protection from a PDF file",
+            "variables": [
+              {
+                "name": "file",
+                "text": "The PDF file to unprotect",
+                "arg": true
+              },
+              {
+                "name": "password",
+                "text": "The password to decrypt the PDF with"
+              },
+              {
+                "name": "out",
+                "text": "The location to save the unprotected PDF file. If not provided, the original file will be overwritten.",
+                "default": ""
               }
             ]
           }
