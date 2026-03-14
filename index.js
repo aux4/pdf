@@ -73,12 +73,26 @@ export async function fillPdf(inPdfPath, outPdfPath) {
     stdin.on("error", (err) => reject(err));
   });
 
-  const fieldValues = JSON.parse(inputJson);
+  const parsed = JSON.parse(inputJson);
+
+  // Normalize input: accept both object {"name": "value"} and array [{name, value}]
+  let entries;
+  if (Array.isArray(parsed)) {
+    entries = parsed.map((item) => ({ name: item.name, value: item.value }));
+  } else {
+    entries = Object.entries(parsed).map(([name, value]) => ({ name, value }));
+  }
+
+  // Build field type lookup from the PDF form
+  const form = pdfDoc.getForm();
+  const pdfFields = form.getFields().map((f) => ({
+    name: f.getName(),
+    type: f.constructor.name.replace("PDF", "")
+  }));
 
   // Set field values
-  for (const field of fieldValues) {
-    const { name, value } = field;
-    setFieldValue(pdfDoc, fieldValues, name, value);
+  for (const { name, value } of entries) {
+    setFieldValue(pdfDoc, pdfFields, name, value);
   }
 
   // Save the updated PDF to the output path
