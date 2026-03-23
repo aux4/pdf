@@ -61,6 +61,62 @@ export async function parsePdf(pdfPath) {
   return pages;
 }
 
+export async function searchPdf(pdfPath, term) {
+  const pdf = await loadPdfFromFile(pdfPath);
+  const pageCount = await getPdfPageCount(pdf);
+  const results = [];
+  const lowerTerm = term.toLowerCase();
+
+  for (let i = 1; i <= pageCount; i++) {
+    const texts = await getPdfTextByPage(pdf, i);
+    sortPdfElements(texts);
+
+    // Search through individual text items
+    for (const item of texts) {
+      if (item.content.toLowerCase().includes(lowerTerm)) {
+        results.push({
+          page: i,
+          text: item.content.trim(),
+          x: item.x,
+          y: item.y
+        });
+      }
+    }
+
+    // Search across concatenated line text for multi-item matches
+    const lineGroups = groupTextByLine(texts);
+    for (const line of lineGroups) {
+      const lineText = line.items.map(t => t.content).join(" ");
+      if (lineText.toLowerCase().includes(lowerTerm)) {
+        const alreadyFound = results.some(r => r.page === i && Math.abs(r.y - line.y) < 5);
+        if (!alreadyFound) {
+          results.push({
+            page: i,
+            text: lineText.trim(),
+            x: line.items[0].x,
+            y: line.y
+          });
+        }
+      }
+    }
+  }
+
+  return results;
+}
+
+function groupTextByLine(texts) {
+  const lines = [];
+  for (const item of texts) {
+    const existing = lines.find(l => Math.abs(l.y - item.y) < 5);
+    if (existing) {
+      existing.items.push(item);
+    } else {
+      lines.push({ y: item.y, items: [item] });
+    }
+  }
+  return lines;
+}
+
 export async function fillPdf(inPdfPath, outPdfPath) {
   const pdfDoc = await loadPdfDocumentFromFile(inPdfPath);
 
@@ -164,6 +220,12 @@ export async function fillPdf(inPdfPath, outPdfPath) {
     const elements = JSON.parse(inputJson);
     await addForm(inPdfPath, outPdfPath, elements);
     console.log(`Form fields added and saved to ${outPdfPath}`);
+  } else if (args[0] === "search" && args.length === 3) {
+    const pdfPath = args[1];
+    const term = args[2];
+    guardProtected(pdfPath);
+    const results = await searchPdf(pdfPath, term);
+    console.log(JSON.stringify(results));
   } else {
     console.error("Invalid arguments. Usage:");
     console.error("  node index.js parse '<PDF PATH>'");
@@ -173,6 +235,7 @@ export async function fillPdf(inPdfPath, outPdfPath) {
     console.error("  node index.js form '<IN PDF PATH>' '<OUT PDF PATH>' <form definitions JSON via stdin>");
     console.error("  node index.js protect '<IN PDF PATH>' '<OUT PDF PATH>'");
     console.error("  node index.js unprotect '<IN PDF PATH>' '<OUT PDF PATH>'");
+    console.error("  node index.js search '<PDF PATH>' '<SEARCH TERM>'");
     process.exit(1);
   }
 })();

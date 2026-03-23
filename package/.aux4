@@ -1,7 +1,7 @@
 {
   "scope": "aux4",
   "name": "pdf",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "PDF toolkit",
   "license": "Apache-2.0",
   "tags": [
@@ -170,6 +170,26 @@
                 "name": "out",
                 "text": "The location to save the unprotected PDF file. If not provided, the original file will be overwritten.",
                 "default": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "search",
+          "execute": [
+            "node ${packageDir}/lib/aux4-pdf.js search values(file, term)"
+          ],
+          "help": {
+            "text": "Search for a term in the PDF file and return the pages and locations where it is found",
+            "variables": [
+              {
+                "name": "file",
+                "text": "The PDF file to search",
+                "arg": true
+              },
+              {
+                "name": "term",
+                "text": "The search term to look for"
               }
             ]
           }
