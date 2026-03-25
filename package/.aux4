@@ -15,7 +15,7 @@
       "linux:nodejs"
     ],
     [
-      "test:gs version",
+      "test:gs --version",
       "apt:ghostscript",
       "linux:ghostscript",
       "brew:gs"
