@@ -1,3 +1,4 @@
+import fs from "fs";
 import {
   getPdfFieldsByPage,
   getPdfPageCount,
@@ -15,6 +16,7 @@ import { stdin } from "process";
 import { imagePdf } from "./lib/image.js";
 import { addForm } from "./lib/doc.js";
 import { protectPdf, unprotectPdf, isProtected } from "./lib/protect.js";
+import { hasXfa, getXfaFields, fillXfaFields } from "./lib/xfa.js";
 
 function guardProtected(pdfPath) {
   if (isProtected(pdfPath)) {
@@ -27,35 +29,56 @@ export async function parsePdf(pdfPath) {
   const pdf = await loadPdfFromFile(pdfPath);
   const pdfDoc = await loadPdfDocumentFromFile(pdfPath);
 
-  const pages = [];
+  const isXfa = hasXfa(pdfDoc);
+  const xfaFields = isXfa ? getXfaFields(pdfDoc) : [];
 
+  const pages = [];
   const pageCount = await getPdfPageCount(pdf);
 
   for (let i = 1; i <= pageCount; i++) {
     const texts = await getPdfTextByPage(pdf, i);
     const fields = await getPdfFieldsByPage(pdf, i);
 
-    await fillFieldOptions(pdfDoc, fields);
+    if (!isXfa) {
+      await fillFieldOptions(pdfDoc, fields);
+    }
 
     const elements = [...texts, ...fields];
     sortPdfElements(elements);
 
     const text = elements.map((item) => item.content).join(" ");
-    const pdfFields = fields.map((item) => ({
-      name: item.name,
-      alternativeText: item.alternativeText,
-      value: item.value,
-      type: item.type,
-      options: item.options,
-      ref: {
-        x: item.x,
-        y: item.y,
-        width: item.width,
-        height: item.height,
-      }
-    }));
 
-    pages.push({ page: i, text, fields: pdfFields });
+    let pdfFields;
+    if (isXfa && i === 1) {
+      // XFA fields are document-level; attach to page 1
+      pdfFields = xfaFields.map((item) => ({
+        name: item.name,
+        caption: item.caption,
+        value: item.value,
+        type: item.type,
+        options: item.options,
+      }));
+    } else if (!isXfa) {
+      pdfFields = fields.map((item) => ({
+        name: item.name,
+        alternativeText: item.alternativeText,
+        value: item.value,
+        type: item.type,
+        options: item.options,
+        ref: {
+          x: item.x,
+          y: item.y,
+          width: item.width,
+          height: item.height,
+        }
+      }));
+    } else {
+      pdfFields = [];
+    }
+
+    const page = { page: i, text, fields: pdfFields };
+    if (isXfa && i === 1) page.xfa = true;
+    pages.push(page);
   }
 
   return pages;
@@ -118,8 +141,6 @@ function groupTextByLine(texts) {
 }
 
 export async function fillPdf(inPdfPath, outPdfPath) {
-  const pdfDoc = await loadPdfDocumentFromFile(inPdfPath);
-
   // Read JSON from stdin
   const inputJson = await new Promise((resolve, reject) => {
     let data = "";
@@ -139,19 +160,25 @@ export async function fillPdf(inPdfPath, outPdfPath) {
     entries = Object.entries(parsed).map(([name, value]) => ({ name, value }));
   }
 
-  // Build field type lookup from the PDF form
+  // Check if PDF uses XFA
+  const pdfDoc = await loadPdfDocumentFromFile(inPdfPath);
+  if (hasXfa(pdfDoc)) {
+    const pdfBytes = await fillXfaFields(inPdfPath, entries);
+    fs.writeFileSync(outPdfPath, pdfBytes);
+    return;
+  }
+
+  // Standard AcroForm fill
   const form = pdfDoc.getForm();
   const pdfFields = form.getFields().map((f) => ({
     name: f.getName(),
     type: f.constructor.name.replace("PDF", "")
   }));
 
-  // Set field values
   for (const { name, value } of entries) {
     setFieldValue(pdfDoc, pdfFields, name, value);
   }
 
-  // Save the updated PDF to the output path
   await savePdfToFile(pdfDoc, outPdfPath);
 }
 
