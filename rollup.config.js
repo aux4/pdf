@@ -20,7 +20,11 @@ export default {
       return true;
     }
     // Native binary dependencies that cannot be bundled
-    if (["pdf2pic", "canvas", "gm"].includes(id)) {
+    if (["pdf2pic", "canvas", "gm", "@napi-rs/canvas"].includes(id)) {
+      return true;
+    }
+    // pdfjs-dist uses dynamic imports internally
+    if (id.startsWith("pdfjs-dist")) {
       return true;
     }
     // pdf.js-extract has complex worker setup that breaks when bundled

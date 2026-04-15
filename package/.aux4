@@ -15,18 +15,6 @@
       "linux:nodejs"
     ],
     [
-      "test:gs --version",
-      "apt:ghostscript",
-      "linux:ghostscript",
-      "brew:gs"
-    ],
-    [
-      "test:gm version",
-      "apt:graphicsmagick",
-      "linux:graphicsmagick",
-      "brew:graphicsmagick"
-    ],
-    [
       "test:qpdf --version",
       "brew:qpdf",
       "apt:qpdf",

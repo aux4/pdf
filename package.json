@@ -27,6 +27,7 @@
   },
   "homepage": "https://github.com/aux4/pdf#readme",
   "dependencies": {
+    "@napi-rs/canvas": "^0.1.97",
     "@thednp/dommatrix": "^3.0.3",
     "fast-xml-parser": "^5.6.0",
     "pdf-lib": "^1.17.1",
