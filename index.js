@@ -260,7 +260,7 @@ export async function fillPdf(inPdfPath, outPdfPath) {
     } else {
       try {
         const parsed = JSON.parse(pageArg);
-        pages = Array.isArray(parsed) ? parsed.map(Number) : [Number(parsed)];
+        pages = (Array.isArray(parsed) ? parsed : [parsed]).map(Number).filter(n => n > 0);
       } catch {
         pages = args.slice(2).map(Number).filter(n => !isNaN(n));
       }
