@@ -247,6 +247,43 @@ export async function fillPdf(inPdfPath, outPdfPath) {
     const elements = JSON.parse(inputJson);
     await addForm(inPdfPath, outPdfPath, elements);
     console.log(`Form fields added and saved to ${outPdfPath}`);
+  } else if (args[0] === "text" && args.length >= 2) {
+    const pdfPath = args[1];
+    guardProtected(pdfPath);
+    const pdf = await loadPdfFromFile(pdfPath);
+    const pageCount = await getPdfPageCount(pdf);
+    // Parse page arguments — can be a JSON array or individual numbers
+    let pages;
+    const pageArg = args[2];
+    if (!pageArg) {
+      pages = Array.from({ length: pageCount }, (_, i) => i + 1);
+    } else {
+      try {
+        const parsed = JSON.parse(pageArg);
+        pages = Array.isArray(parsed) ? parsed.map(Number) : [Number(parsed)];
+      } catch {
+        pages = args.slice(2).map(Number).filter(n => !isNaN(n));
+      }
+    }
+    if (pages.length === 0) {
+      pages = Array.from({ length: pageCount }, (_, i) => i + 1);
+    }
+    const output = [];
+    for (const i of pages) {
+      const texts = await getPdfTextByPage(pdf, i);
+      sortPdfElements(texts);
+      const lines = [];
+      let currentY = null;
+      for (const item of texts) {
+        if (currentY !== null && Math.abs(item.y - currentY) > 5) {
+          lines.push("\n");
+        }
+        lines.push(item.content);
+        currentY = item.y;
+      }
+      output.push(lines.join(""));
+    }
+    console.log(output.join("\f\n"));
   } else if (args[0] === "search" && args.length === 3) {
     const pdfPath = args[1];
     const term = args[2];

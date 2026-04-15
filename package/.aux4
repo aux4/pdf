@@ -1,7 +1,7 @@
 {
   "scope": "aux4",
   "name": "pdf",
-  "version": "0.1.8",
+  "version": "0.2.0",
   "description": "PDF toolkit",
   "license": "Apache-2.0",
   "tags": [
@@ -169,6 +169,27 @@
               {
                 "name": "out",
                 "text": "The location to save the unprotected PDF file. If not provided, the original file will be overwritten.",
+                "default": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "text",
+          "execute": [
+            "node ${packageDir}/lib/aux4-pdf.js text values(file, page*)"
+          ],
+          "help": {
+            "text": "Extract text content from the PDF file",
+            "variables": [
+              {
+                "name": "file",
+                "text": "The PDF file to extract text from",
+                "arg": true
+              },
+              {
+                "name": "page",
+                "text": "The page number(s) to extract. Can be specified multiple times. If not provided, all pages are extracted.",
                 "default": ""
               }
             ]
