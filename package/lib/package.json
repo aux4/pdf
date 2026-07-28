@@ -5,14 +5,7 @@
   "type": "module",
   "main": "aux4-pdf.js",
   "license": "Apache-2.0",
-  "comment": "@napi-rs/canvas ships a platform-specific native binary used only by 'aux4 pdf image'. The platform packages below are listed explicitly (and installed with 'npm install --force', which ignores the os/cpu mismatch) so the published package carries binaries for every supported platform instead of only the CI build host's. Windows is intentionally omitted (not fully supported). Keep @napi-rs/canvas and its platform packages pinned to the SAME exact version so the native ABI matches.",
   "dependencies": {
-    "@napi-rs/canvas": "0.1.100",
-    "@napi-rs/canvas-darwin-arm64": "0.1.100",
-    "@napi-rs/canvas-darwin-x64": "0.1.100",
-    "@napi-rs/canvas-linux-x64-gnu": "0.1.100",
-    "@napi-rs/canvas-linux-x64-musl": "0.1.100",
-    "@napi-rs/canvas-linux-arm64-gnu": "0.1.100",
     "pdf.js-extract": "^0.2.1",
     "pdfjs-dist": "^5.5.207"
   }

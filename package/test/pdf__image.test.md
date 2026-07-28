@@ -34,7 +34,7 @@ cleaned
 
 ## Given a sample-xfa-form.pdf
 
-### It should render an XFA form page to image with field data
+### It should render an XFA form page to an image
 
 ```execute
 aux4 pdf image sample-xfa-form.pdf --page 1 --image xfa-page1.png

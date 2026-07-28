@@ -49,7 +49,7 @@ jobs:
         uses: aux4/test-package-action@v1
         with:
           build_command: aux4 build
-          system_packages: qpdf
+          system_packages: qpdf poppler-utils
 
   test-darwin:
     runs-on: macos-latest
@@ -69,7 +69,7 @@ jobs:
         uses: aux4/test-package-action@v1
         with:
           build_command: aux4 build
-          system_packages: qpdf
+          system_packages: qpdf poppler
 
   publish:
     needs: [test-linux, test-darwin]
@@ -92,14 +92,13 @@ jobs:
         run: npm run build
 
       - name: Install runtime dependencies
-        # pdfjs-dist, pdf.js-extract and @napi-rs/canvas are kept external by
-        # rollup (native / worker code that can't be bundled), so they must be
-        # shipped as package/lib/node_modules. The publish action only runs
-        # `pkger build`, which zips whatever is on disk — install them first.
-        # --force installs the os/cpu-mismatched @napi-rs/canvas platform
-        # packages too, so the published package renders `pdf image` on every
-        # supported platform, not just this Linux runner's.
-        run: cd package/lib && npm install --force
+        # pdfjs-dist and pdf.js-extract are kept external by rollup (worker code
+        # that can't be bundled), so they must be shipped as package/lib/
+        # node_modules. The publish action only runs `pkger build`, which zips
+        # whatever is on disk — install them first. Both are pure JS, so no
+        # platform-specific handling is needed (PDF rasterization now uses the
+        # system `pdftocairo` from poppler instead of a bundled native binary).
+        run: cd package/lib && npm install --omit=optional
 
       - name: Publish package
         uses: aux4/publish-package-action@v1

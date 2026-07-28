@@ -19,6 +19,12 @@
       "brew:qpdf",
       "apt:qpdf",
       "linux:qpdf"
+    ],
+    [
+      "test:pdftocairo -v",
+      "brew:poppler",
+      "apt:poppler-utils",
+      "linux:poppler-utils"
     ]
   ],
   "profiles": [
