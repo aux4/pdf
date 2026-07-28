@@ -96,7 +96,10 @@ jobs:
         # rollup (native / worker code that can't be bundled), so they must be
         # shipped as package/lib/node_modules. The publish action only runs
         # `pkger build`, which zips whatever is on disk — install them first.
-        run: cd package/lib && npm install
+        # --force installs the os/cpu-mismatched @napi-rs/canvas platform
+        # packages too, so the published package renders `pdf image` on every
+        # supported platform, not just this Linux runner's.
+        run: cd package/lib && npm install --force
 
       - name: Publish package
         uses: aux4/publish-package-action@v1
