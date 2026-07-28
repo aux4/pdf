@@ -1,0 +1,13 @@
+{
+  "name": "@aux4/pdf",
+  "version": "0.0.4",
+  "description": "PDF toolkit",
+  "type": "module",
+  "main": "aux4-pdf.js",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@napi-rs/canvas": "^0.1.97",
+    "pdf.js-extract": "^0.2.1",
+    "pdfjs-dist": "^5.5.207"
+  }
+}

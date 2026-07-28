@@ -91,6 +91,13 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Install runtime dependencies
+        # pdfjs-dist, pdf.js-extract and @napi-rs/canvas are kept external by
+        # rollup (native / worker code that can't be bundled), so they must be
+        # shipped as package/lib/node_modules. The publish action only runs
+        # `pkger build`, which zips whatever is on disk — install them first.
+        run: cd package/lib && npm install
+
       - name: Publish package
         uses: aux4/publish-package-action@v1
         with:

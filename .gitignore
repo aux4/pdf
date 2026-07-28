@@ -140,3 +140,4 @@ local-test/
 *.zip
 
 package/lib/*
+!package/lib/package.json
