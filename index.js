@@ -189,13 +189,23 @@ export async function fillPdf(inPdfPath, outPdfPath) {
     const inPdfPath = args[1];
     const password = args[2];
     const outPdfPath = args[3] || inPdfPath;
-    protectPdf(inPdfPath, outPdfPath, password);
+    try {
+      protectPdf(inPdfPath, outPdfPath, password);
+    } catch (err) {
+      console.error(err.message);
+      process.exit(1);
+    }
     console.log(`PDF protected and saved to ${outPdfPath}`);
   } else if (args[0] === "unprotect" && args.length === 4) {
     const inPdfPath = args[1];
     const password = args[2];
     const outPdfPath = args[3] || inPdfPath;
-    unprotectPdf(inPdfPath, outPdfPath, password);
+    try {
+      unprotectPdf(inPdfPath, outPdfPath, password);
+    } catch (err) {
+      console.error(err.message);
+      process.exit(1);
+    }
     console.log(`PDF unprotected and saved to ${outPdfPath}`);
   } else if (args[0] === "parse" && args.length === 2) {
     const pdfPath = args[1];
