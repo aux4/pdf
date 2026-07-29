@@ -31,3 +31,39 @@ rm -f filled-output.pdf && echo "cleaned"
 ```expect
 cleaned
 ```
+
+## Given a sample-choice-form.pdf
+
+```afterAll
+rm -f choice-filled.pdf
+```
+
+### It should fill a dropdown (choice) field and a text field
+
+```execute
+echo '[{"name": "plan", "value": "Pro", "type": "Dropdown"}, {"name": "name", "value": "Sally", "type": "TextField"}]' | aux4 pdf fill sample-choice-form.pdf --out choice-filled.pdf
+```
+
+```expect
+PDF filled and saved to choice-filled.pdf
+```
+
+### It should reflect the dropdown selection when the filled PDF is parsed
+
+```execute
+aux4 pdf parse choice-filled.pdf | tr -d ' \n' | grep -o '"value":\["Pro"\],"type":"Dropdown"'
+```
+
+```expect
+"value":["Pro"],"type":"Dropdown"
+```
+
+### It should reflect the text field value when the filled PDF is parsed
+
+```execute
+aux4 pdf parse choice-filled.pdf | tr -d ' \n' | grep -o '"name":"name","alternativeText":"","value":"Sally"'
+```
+
+```expect
+"name":"name","alternativeText":"","value":"Sally"
+```
